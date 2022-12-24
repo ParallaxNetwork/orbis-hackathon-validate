@@ -1,0 +1,41 @@
+@font-face {
+  font-family: 'Supreme';
+  src: url('./Supreme-Regular.woff2') format('woff2'),
+       url('./Supreme-Regular.woff') format('woff'),
+       url('./Supreme-Regular.ttf') format('truetype');
+       font-weight: 400;
+       font-display: swap;
+       font-style: normal;
+}
+
+
+@font-face {
+  font-family: 'Supreme';
+  src: url('./Supreme-Italic.woff2') format('woff2'),
+       url('./Supreme-Italic.woff') format('woff'),
+       url('./Supreme-Italic.ttf') format('truetype');
+       font-weight: 400;
+       font-display: swap;
+       font-style: italic;
+}
+
+@font-face {
+  font-family: 'Supreme';
+  src: url('./Supreme-Bold.woff2') format('woff2'),
+       url('./Supreme-Bold.woff') format('woff'),
+       url('./Supreme-Bold.ttf') format('truetype');
+       font-weight: 700;
+       font-display: swap;
+       font-style: normal;
+}
+
+
+@font-face {
+  font-family: 'Supreme';
+  src: url('./Supreme-BoldItalic.woff2') format('woff2'),
+       url('./Supreme-BoldItalic.woff') format('woff'),
+       url('./Supreme-BoldItalic.ttf') format('truetype');
+       font-weight: 700;
+       font-display: swap;
+       font-style: italic;
+}

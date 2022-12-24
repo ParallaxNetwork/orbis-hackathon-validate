@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=MuseoModerno:wght@500&display=swap');
+@import '../fonts/supreme/stylesheet.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply font-body bg-blue-dark text-white text-base;
+  }
+
+  input {
+    &[type=text],
+    &[type=email],
+    &[type=url],
+    &[type=password],
+    &[type=number],
+    &[type=date],
+    &[type=datetime-local],
+    &[type=month],
+    &[type=tel],
+    &[type=time],
+    &[type=week] {
+      @apply w-full px-5 bg-blue-input rounded-full border-transparent active:border-blue-active-input;
+    }
+  }
+}
+
+@layer components {
+  .btn {
+    @apply flex items-center justify-center font-title rounded-full h-8 px-5 bg-white text-blue-dark;
+
+    &-primary {
+      @apply bg-primary;
+    }
+
+    &-large {
+      @apply text-base leading-none h-10 px-6;
+    }
+  }
+
+  .badge {
+    @apply flex items-center justify-center rounded-full h-8 px-5;
+  }
+
+  .nav {
+    @apply flex flex-col;
+
+    &-item {
+      @apply py-2.5 px-6 text-large font-title text-white border-l-4 border-l-transparent;
+
+      &.active {
+        @apply bg-primary/10 border-l-primary text-primary;
+      }
+    }
+  }
+}
