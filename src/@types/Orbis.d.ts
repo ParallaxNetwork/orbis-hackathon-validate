@@ -11,6 +11,7 @@ declare interface IOrbisConstructor {
 }
 
 declare interface IOrbis {
+  api: any
   connect: (provider: any, lit?: boolean) => Promise<IOrbisConnectReturns>
   connect_v2: (opts?: {
     provider?: any
@@ -94,6 +95,7 @@ declare interface IOrbis {
     encryptionRules?: IOrbisEncryptionRules
   ) => Promise<{
     status: number
+    doc: string
     result: string
   }>
   getChannel: (channel_id: string) => Promise<{
@@ -301,19 +303,7 @@ declare interface IOrbis {
     result: string
   }>
   updatePost: (stream_id: string, body: string) => void
-  updateProfile: (content: {
-    pfp: string
-    cover: string
-    username: string
-    description: string
-    pfpIsNft: {
-      chain: string
-      contract: string
-      tokenId: string
-      timestamp: string
-    }
-    data?: object
-  }) => Promise<{
+  updateProfile: (content: IOrbisProfile['details']['profile']) => Promise<{
     status: number
     doc: string
     result: string
@@ -431,41 +421,26 @@ declare interface IOrbisProfile {
 }
 
 interface IOrbisCredential {
+  content: {
+    '@context'?: string[]
+    credentialSchema?: Record<string, string>
+    credentialSubject: Record<string, any>
+    expirationDate: string
+    id?: string
+    issuanceDate: string
+    issuer: Record<string, string> | string
+    proof?: Record<string, any>
+    type: string[]
+  }
+  created_at: string
+  creator: string
+  family: string | null
+  hash: string | null
+  issuer: string
+  creator: string
+  provider: string | null
   stream_id: string
-  family: string
-  content?: {
-    issuer?: {
-      id?: string
-      ethereumAddress?: string
-    },
-    context?: string[],
-    issuanceDate?: string,
-    expirationDate?: string,
-    credentialSchema?: {
-      id?: string,
-      type?: string
-    },
-    credentialSubject?: {
-      id?: string,
-      did?: string,
-      exp?: number,
-      nbf?: number,
-      tags?: string[],
-      type?: string,
-      price?: number,
-      stake?: number,
-      trust?: number,
-      value?: string,
-      encrypted?: string,
-      typeSchema?: string,
-      expirationDate?: string,
-      ethereumAddress?: string,
-    }
-  },
-  issuer?: string,
-  creator?: string,
-  subject_id?: string,
-  type?: string,
+  subject_id: string
 }
 
 interface IOrbisEncryptionRules {
@@ -501,6 +476,10 @@ interface IOrbisPostContent {
     slug?: string | null
     title?: string | null
   }[]
+  media?: {
+    url: string
+    gateway: string
+  }[]
   data?: object
   encryptionRules?: IOrbisEncryptionRules | null
   encryptedMessage?: object | null
@@ -522,7 +501,7 @@ declare interface IOrbisPost {
   count_likes: number
   count_replies: number
   creator: string
-  creator_details?: IOrbisProfile['details']
+  creator_details: IOrbisProfile['details']
   group_id?: string | null
   indexing_metadata?: {
     language?: string

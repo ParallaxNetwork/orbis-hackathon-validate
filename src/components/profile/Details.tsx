@@ -1,8 +1,13 @@
 import { useState, useEffect } from 'react'
 import { PassportScorer } from '@gitcoinco/passport-sdk-scorer'
 import { useOrbis } from '../../contexts/orbis'
-import { getUsername, shortAddress } from '../../utils/orbis'
+import {
+  filterExpiredCredentials,
+  getUsername,
+  shortAddress
+} from '../../utils/orbis'
 import Avatar from './Avatar'
+import ProfileDialog from './ProfileDialog'
 
 const ProfileDetails = ({
   address,
@@ -12,9 +17,12 @@ const ProfileDetails = ({
   profile: IOrbisProfile
 }) => {
   const src = profile?.details?.profile?.pfp
-  const { orbis } = useOrbis()
+  const { orbis, profile: loggedProfile } = useOrbis()
 
-  const [credentials, setCredentials] = useState<IOrbisCredential[]>([])
+  const [showEditDialog, setShowEditDialog] = useState<boolean>(false)
+  const [credsFamilies, setCredsFamilies] = useState<
+    Record<string, IOrbisCredential[]>
+  >({})
 
   const scorer = new PassportScorer([
     {
@@ -36,8 +44,42 @@ const ProfileDetails = ({
 
   const getCredentials = async () => {
     const { data, error } = await orbis.getCredentials(profile?.did)
-    console.log({ data, error })
-    if (!error && data.length) setCredentials(data)
+    if (error) console.error(error)
+    if (data) {
+      const filtered = filterExpiredCredentials(data)
+      // Group filtered credentials by family
+      const grouped = filtered.reduce((acc, curr) => {
+        let { family } = curr
+        // If family is null set as Gitcoin
+        if (!family) {
+          family = 'gitcoin'
+        }
+        if (acc[family]) {
+          acc[family].push(curr)
+        } else {
+          acc[family] = [curr]
+        }
+        return acc
+      }, {} as { [key: string]: IOrbisCredential[] })
+
+      console.log(grouped)
+
+      setCredsFamilies(grouped)
+
+      console.log(
+        'Gitcoin:',
+        grouped['gitcoin'].map((cred) => {
+          return cred.content.credentialSubject?.provider
+        })
+      )
+
+      console.log(
+        'Krebit:',
+        grouped['krebit'].map((cred) => {
+          return cred.content.credentialSubject?.type
+        })
+      )
+    }
   }
 
   useEffect(() => {
@@ -48,7 +90,7 @@ const ProfileDetails = ({
   }, [profile])
 
   return (
-    <div className="px-6 pb-6 mb-6 border-b border-b-muted">
+    <div className="p-6 border-b border-b-muted">
       {/* Columns */}
       <div className="flex flex-col gap-6 md:flex-row">
         {/* Left */}
@@ -56,16 +98,34 @@ const ProfileDetails = ({
           {/* Pfp, Username, Address */}
           <div className="flex gap-4 items-center">
             <div className="shrink-0">
-              <Avatar src={src} defaultSeed={address} size={75} />
+              <Avatar
+                src={src}
+                defaultSeed={address?.toLowerCase()}
+                size={75}
+              />
             </div>
             <div className="grow">
               <h2 className="font-title text-medium mb-2">
                 {getUsername(profile?.details)}
               </h2>
               <div className="flex items-center gap-2">
-                <div className="badge bg-grey-dark text-secondary text-small">
+                <div className="badge badge-pill bg-grey-dark text-secondary text-small">
                   {shortAddress(address)}
                 </div>
+                {loggedProfile && loggedProfile.did === profile?.did && (
+                  <>
+                    <button
+                      className="btn btn-pill bg-transparent text-primary border-2 border-primary hover:bg-primary hover:text-blue-dark"
+                      onClick={() => setShowEditDialog(true)}
+                    >
+                      Edit Profile
+                    </button>
+                    <ProfileDialog
+                      showDialog={showEditDialog}
+                      setShowDialog={setShowEditDialog}
+                    />
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -90,11 +150,17 @@ const ProfileDetails = ({
         <div className="md:w-1/2">
           <h2 className="text-grey-lighter mb-2">Credentials</h2>
           <div className="flex flex-wrap items-center gap-2">
-            {credentials.map((credential) => (
-              <div key={credential.stream_id} className="badge">
-                {credential.type}
-              </div>
-            ))}
+            {/* {Object.keys(credsFamilies).map((family) => {
+              const credentials = credsFamilies[family]
+              credentials.map((credential) => {
+                const { type } = credential
+                return (
+                  <div key={credential.stream_id} className="badge">
+                    {type}
+                  </div>
+                )
+              })
+            })} */}
           </div>
         </div>
       </div>

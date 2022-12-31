@@ -7,7 +7,15 @@ interface AvatarProps {
   size?: number
 }
 
-const Avatar: React.FC<AvatarProps> = ({ src, defaultSeed = '', size = 24 }) => {
+const Avatar: React.FC<AvatarProps> = ({
+  src,
+  defaultSeed = '',
+  size = 24
+}) => {
+  const _src = src?.startsWith('ipfs://')
+    ? src.replace('ipfs://', 'https://ipfs.io/ipfs/')
+    : src
+
   if (!src && !defaultSeed) {
     return (
       <div
@@ -17,9 +25,9 @@ const Avatar: React.FC<AvatarProps> = ({ src, defaultSeed = '', size = 24 }) => 
     )
   }
 
-  return src ? (
+  return _src ? (
     <img
-      src={src}
+      src={_src}
       alt="Avatar"
       className="object-cover object-center rounded-full overflow-hidden"
       width={size}

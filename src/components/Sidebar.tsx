@@ -6,14 +6,14 @@ const Sidebar = () => {
   const { profile } = useOrbis()
 
   return (
-    <>
+    <div className="sticky top-0">
       {!profile && (
-        <div className="my-6 px-6 pb-6 border-b border-b-muted">
+        <div className="py-6 px-6 pb-6 border-b border-b-muted">
           <ConnectButton />
         </div>
       )}
       <Trending />
-    </>
+    </div>
   )
 }
 

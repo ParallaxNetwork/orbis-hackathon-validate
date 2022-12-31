@@ -11,8 +11,9 @@ module.exports = {
       small: '12px',
       base: '16px',
       medium: '18px',
-      large: '24px',
-      xlarge: '32px'
+      large: '20px',
+      xlarge: '24px',
+      '2xlarge': '32px'
     },
     colors: {
       white: '#FFFFFF',
@@ -27,14 +28,16 @@ module.exports = {
       current: 'currentColor',
       primary: '#04FFB8',
       secondary: '#B4B4B4',
-      muted: '#6D727A',
+      muted: '#414141',
       blue: {
+        lightest: '#E1FFF7',
         light: '#1D449A',
+        medium: '#2E67E7',
         dark: '#000B19',
         input: '#00122C',
-        search: '#0D204A',
-        'active-input': '#2E67E7'
-      }
+        search: '#0D204A'
+      },
+      red: '#E72E66'
     },
     extend: {
       animation: {

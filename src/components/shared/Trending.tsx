@@ -1,7 +1,7 @@
 const Trending = () => {
   return (
-    <div className="my-6 px-6">
-      <h1 className="text-large font-title">
+    <div className="p-6 max-h-full">
+      <h1 className="text-xlarge font-title">
         Trending Topics
       </h1>
     </div>

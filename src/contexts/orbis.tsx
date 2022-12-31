@@ -7,13 +7,14 @@ import {
   ReactElement
 } from 'react'
 import { useAccount } from 'wagmi'
-import { sleep } from '../utils/orbis'
+import { sleep } from '../utils/misc'
 
 interface IOrbisContext {
   appContext: string
   orbis: IOrbis
   profile: IOrbisProfile | null
   hasLit: boolean
+  setProfile: (profile: IOrbisProfile | null) => void
   connectOrbis: (provider: any, lit?: boolean) => Promise<void>
   connectLit: (provider: any) => Promise<{
     status?: number
@@ -54,7 +55,6 @@ const OrbisProvider = ({
     provider,
     lit = false
   ) => {
-    console.log('connecting', provider)
     const res = await orbis.connect_v2({
       provider,
       chain: 'ethereum',
@@ -119,10 +119,6 @@ const OrbisProvider = ({
   }
 
   useEffect(() => {
-    console.log('profile', profile)
-  }, [profile])
-
-  useEffect(() => {
     if (isDisconnected) {
       disconnectOrbis()
     }
@@ -135,6 +131,7 @@ const OrbisProvider = ({
         orbis,
         profile,
         hasLit,
+        setProfile,
         connectOrbis,
         connectLit,
         checkOrbisConnection,
@@ -147,8 +144,6 @@ const OrbisProvider = ({
   )
 }
 
-const useOrbis = () => {
-  return useContext(OrbisContext)
-}
+const useOrbis = () => useContext(OrbisContext)
 
 export { OrbisProvider, useOrbis }

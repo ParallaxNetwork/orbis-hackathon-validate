@@ -10,49 +10,115 @@
     @apply font-body bg-blue-dark text-white text-base;
   }
 
+  ::-webkit-scrollbar {
+    @apply w-1.5 h-1.5;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-white/10 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary/70 rounded-full;
+  }
+
   input {
-    &[type=text],
-    &[type=email],
-    &[type=url],
-    &[type=password],
-    &[type=number],
-    &[type=date],
-    &[type=datetime-local],
-    &[type=month],
-    &[type=tel],
-    &[type=time],
-    &[type=week] {
-      @apply w-full px-5 bg-blue-input rounded-full border-transparent active:border-blue-active-input;
+    &[type='text'],
+    &[type='email'],
+    &[type='url'],
+    &[type='password'],
+    &[type='number'],
+    &[type='date'],
+    &[type='datetime-local'],
+    &[type='month'],
+    &[type='tel'],
+    &[type='time'],
+    &[type='week'] {
+      @apply w-full px-3 bg-blue-input rounded-lg border-transparent active:border-blue-medium placeholder:text-white/40;
     }
+  }
+
+  select {
+    @apply w-full px-3 bg-blue-input rounded-lg border-transparent active:border-blue-medium placeholder:text-white/40;
+  }
+
+  textarea {
+    @apply w-full px-3 bg-blue-input rounded-lg border-transparent active:border-blue-medium placeholder:text-white/40;
   }
 }
 
 @layer components {
   .btn {
-    @apply flex items-center justify-center font-title rounded-full h-8 px-5 bg-white text-blue-dark;
+    @apply flex items-center justify-center font-title rounded-full bg-white text-blue-dark disabled:opacity-50 disabled:cursor-not-allowed;
 
     &-primary {
       @apply bg-primary;
     }
 
-    &-large {
-      @apply text-base leading-none h-10 px-6;
+    &-pill {
+      @apply h-8 px-5;
+
+      &.small {
+        @apply leading-none h-6 px-4;
+      }
+
+      &.large {
+        @apply text-base leading-none h-10 px-6;
+      }
+    }
+
+    &-circle {
+      @apply w-8 h-8;
+
+      &.small {
+        @apply w-6 h-6;
+      }
+
+      &.large {
+        @apply w-10 h-10;
+      }
     }
   }
 
   .badge {
-    @apply flex items-center justify-center rounded-full h-8 px-5;
+    @apply flex items-center justify-center rounded-full;
+
+    &-pill {
+      @apply h-8 px-5;
+
+      &.small {
+        @apply text-small leading-none h-6 px-4;
+      }
+
+      &.large {
+        @apply text-base leading-none h-10 px-6;
+      }
+    }
+
+    &-circle {
+      @apply w-8 h-8;
+
+      &.small {
+        @apply w-6 h-6;
+      }
+
+      &.large {
+        @apply w-10 h-10;
+      }
+    }
   }
 
   .nav {
     @apply flex flex-col;
 
     &-item {
-      @apply py-2.5 px-6 text-large font-title text-white border-l-4 border-l-transparent;
+      @apply py-2.5 px-6 text-xlarge font-title text-white border-l-4 border-l-transparent;
 
       &.active {
         @apply bg-primary/10 border-l-primary text-primary;
       }
     }
+  }
+
+  .content-editable {
+    @apply w-full px-3 py-2 bg-blue-input rounded-md border-2 border-transparent overflow-y-auto before:text-white/40 before:pointer-events-none empty:before:content-[attr(data-placeholder)] focus:border-blue-medium focus:outline-0;
   }
 }

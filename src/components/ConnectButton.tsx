@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useConnect, Connector } from 'wagmi'
 import { useOrbis } from '../contexts/orbis'
 
-import { CgSpinner } from 'react-icons/cg'
+import { CgSpinner as SpinnerIcon } from 'react-icons/cg'
 
 import Dialog from './shared/Dialog'
 import Loading from './Loading'
@@ -35,21 +35,21 @@ const ConnectButton = () => {
 
   return (
     <>
-      <h1 className="leading-none text-large font-title mb-2">
+      <h1 className="leading-none text-xlarge font-title mb-2">
         Want to discuss your idea?
       </h1>
       <p className="text-secondary text-small mb-4">
         Connect your wallet to join the community in Validate
       </p>
       <button
-        className="btn btn-primary btn-large"
+        className="btn btn-primary btn-pill btn-pill large"
         onClick={() => setOpen(true)}
       >
         Connect Wallet
       </button>
       <Dialog open={open} onOpenChange={setOpen}>
         <div className="w-[320px] p-6">
-          <h1 className="text-large font-title text-center mb-2">
+          <h1 className="text-xlarge font-title text-center mb-2">
             Connect your wallet
           </h1>
           <p className="text-secondary text-small text-center mb-6">
@@ -62,12 +62,12 @@ const ConnectButton = () => {
               {connectors.map((connector) => (
                 <button
                   key={connector.id}
-                  className="btn btn-primary"
+                  className="btn btn-primary btn-pill"
                   disabled={!connector.ready}
                   onClick={() => handleConnection(connector)}
                 >
                   {isLoading && connector.id === pendingConnector?.id ? (
-                    <CgSpinner className="animate-spin" size="1.5rem" />
+                    <SpinnerIcon className="animate-spin" size="1.5rem" />
                   ) : (
                     <span>{connector.name}</span>
                   )}

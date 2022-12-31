@@ -8,6 +8,7 @@ import { Orbis } from '@orbisclub/orbis-sdk'
 import { OrbisProvider } from './contexts/orbis'
 const OrbisClient = new Orbis()
 
+// Import Wagmi
 import { mainnet, configureChains, createClient, WagmiConfig } from 'wagmi'
 import { alchemyProvider } from 'wagmi/providers/alchemy'
 import { infuraProvider } from 'wagmi/providers/infura'
@@ -45,11 +46,15 @@ const wagmiClient = createClient({
   provider
 })
 
+import { VocdoniProvider } from './contexts/vocdoni'
+
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <WagmiConfig client={wagmiClient}>
-      <OrbisProvider orbis={OrbisClient}>
-        <App />
+      <OrbisProvider orbis={OrbisClient} appContext="parallaxValidateTest">
+        <VocdoniProvider>
+          <App />
+        </VocdoniProvider>
       </OrbisProvider>
     </WagmiConfig>
   </React.StrictMode>

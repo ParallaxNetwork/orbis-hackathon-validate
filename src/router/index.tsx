@@ -3,7 +3,7 @@ import { createBrowserRouter } from 'react-router-dom'
 
 import MainLayout from '../layouts/Main'
 
-import Error from '../pages/Error'
+import ErrorPage from '../pages/ErrorPage'
 import Loading from '../components/Loading'
 
 const LoadingPage = () => {
@@ -14,23 +14,43 @@ const LoadingPage = () => {
   )
 }
 
-const Explore = lazy(() => import('../pages/Explore'))
-const Favourites = lazy(() => import('../pages/Favourites'))
-const Profile = lazy(() => import('../pages/Profile'))
-const Test = lazy(() => import('../pages/Test'))
+const ExplorePage = lazy(() => import('../pages/ExplorePage'))
+const FavouritesPage = lazy(() => import('../pages/FavouritesPage'))
+const ProfilePage = lazy(() => import('../pages/ProfilePage'))
+const TopicPage = lazy(() => import('../pages/TopicPage'))
+const SubtopicPage = lazy(() => import('../pages/SubtopicPage'))
+const TestPage = lazy(() => import('../pages/TestPage'))
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <MainLayout />,
-    errorElement: <Error />,
+    errorElement: <ErrorPage />,
     children: [
       {
         path: '',
         handle: 'explore',
         element: (
           <Suspense fallback={<LoadingPage />}>
-            <Explore />
+            <ExplorePage />
+          </Suspense>
+        )
+      },
+      {
+        path: 'topic/:topicId',
+        handle: 'mainTopic',
+        element: (
+          <Suspense fallback={<LoadingPage />}>
+            <TopicPage />
+          </Suspense>
+        )
+      },
+      {
+        path: 'topic/:topicId/:subtopicId',
+        handle: 'subTopic',
+        element: (
+          <Suspense fallback={<LoadingPage />}>
+            <SubtopicPage />
           </Suspense>
         )
       },
@@ -39,7 +59,7 @@ const router = createBrowserRouter([
         handle: 'favourites',
         element: (
           <Suspense fallback={<LoadingPage />}>
-            <Favourites />
+            <FavouritesPage />
           </Suspense>
         )
       },
@@ -51,7 +71,7 @@ const router = createBrowserRouter([
             path: '',
             element: (
               <Suspense fallback={<LoadingPage />}>
-                <Profile />
+                <ProfilePage />
               </Suspense>
             )
           },
@@ -59,7 +79,7 @@ const router = createBrowserRouter([
             path: ':address',
             element: (
               <Suspense fallback={<LoadingPage />}>
-                <Profile />
+                <ProfilePage />
               </Suspense>
             )
           }
@@ -70,7 +90,7 @@ const router = createBrowserRouter([
         handle: 'test',
         element: (
           <Suspense fallback={<LoadingPage />}>
-            <Test />
+            <TestPage />
           </Suspense>
         )
       }

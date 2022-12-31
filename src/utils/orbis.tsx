@@ -1,4 +1,4 @@
-import React from 'react'
+import { Link } from 'react-router-dom'
 import reactStringReplace from 'react-string-replace'
 import { DateTime } from 'luxon'
 
@@ -6,7 +6,7 @@ export const shortAddress = (address: string | undefined): string => {
   if (!address) return '-'
   const head = address.substring(0, 5)
   const tail = address.substring(address.length - 5)
-  return head + '-' + tail
+  return head + '...' + tail
 }
 
 export const didToAddress = (
@@ -18,15 +18,15 @@ export const didToAddress = (
   return short ? shortAddress(parts[4]) : parts[4]
 }
 
-export const getUsername = (
-  details: IOrbisProfile['details']
-): string => {
-  return details?.profile?.username || shortAddress(didToAddress(details?.did))
+export const getUsername = (details: IOrbisProfile['details']): string => {
+  return (
+    details?.profile?.username ||
+    details?.metadata?.ensName ||
+    shortAddress(didToAddress(details?.did))
+  )
 }
 
-export const getBadgeContent = (
-  details: IOrbisProfile['details']
-): string => {
+export const getBadgeContent = (details: IOrbisProfile['details']): string => {
   return details?.metadata?.ensName || shortAddress(didToAddress(details?.did))
 }
 
@@ -68,8 +68,7 @@ export const highlightMentions = (content: IOrbisPostContent) => {
 export const formatMessage = (
   content: IOrbisPostContent,
   hideOverflow = false,
-  overflowLimit = 0,
-  profileUrl = 'https://app.orbis.club/profile/'
+  overflowLimit = 0
 ) => {
   if (!content || !content.body) return null
 
@@ -125,15 +124,15 @@ export const formatMessage = (
       if (mention !== undefined) {
         _body = reactStringReplace(_body, _m, (match, i) =>
           mention.did ? (
-            <a
+            <Link
               key={match + i}
-              href={`${profileUrl}${mention.did}`}
+              to={`/profile/${didToAddress(mention.did)}`}
               target="_blank"
               className="text-primary"
               rel="noreferrer"
             >
               {mention.username}
-            </a>
+            </Link>
           ) : (
             <span className="text-primary" key={match + i}>
               {mention.username}
@@ -158,28 +157,29 @@ export const formatDate = (timestamp: number) => {
   const date = DateTime.fromSeconds(timestamp)
   const diff = now.diff(date, ['days'])
   let res: string | null = date.toRelative()
-  if (diff.get('days') > 7) {
+  if (diff.get('days') > 3) {
     res = date.toLocaleString(DateTime.DATETIME_MED)
   }
   return res
 }
 
-export const sleep = (ms: number) => {
-  return new Promise((resolve) => setTimeout(resolve, ms))
+export const filterExpiredCredentials = (credentials: IOrbisCredential[]) => {
+  const now = DateTime.now()
+  return credentials.filter((c) => {
+    const expires = DateTime.fromISO(c.content?.expirationDate as string)
+    return expires > now
+  })
 }
 
-export const debounce = <F extends (...args: any[]) => any>(
-  func: F,
-  waitFor: number
-) => {
-  let timeout: any
-
-  return (...args: Parameters<F>): Promise<ReturnType<F>> =>
-    new Promise((resolve) => {
-      if (timeout) {
-        clearTimeout(timeout)
-      }
-
-      timeout = setTimeout(() => resolve(func(...args)), waitFor)
-    })
+export const getMediaUrl = ({
+  url,
+  gateway
+}: {
+  url: string
+  gateway?: string
+}) => {
+  if (!url) return ''
+  const uri = url.replace('ipfs://', '')
+  const _gateway = gateway || 'https://ipfs.io/ipfs/'
+  return `${_gateway}${uri}`
 }
