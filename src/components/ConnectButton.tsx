@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useConnect, Connector } from 'wagmi'
+import { useConnect, useSigner, Connector } from 'wagmi'
 import { useOrbis } from '../contexts/orbis'
 
 import { CgSpinner as SpinnerIcon } from 'react-icons/cg'
@@ -9,6 +9,7 @@ import Loading from './Loading'
 
 const ConnectButton = () => {
   const { connectAsync, connectors, isLoading, pendingConnector } = useConnect()
+  const { data: signer } = useSigner()
   const { checkOrbisConnection } = useOrbis()
 
   const [open, setOpen] = useState(false)
@@ -16,14 +17,22 @@ const ConnectButton = () => {
 
   const handleConnection = async (connector: Connector) => {
     try {
-      const res = await connectAsync({ connector })
+      let provider: any
 
-      if (!res || !res.account) return
+      if (!signer) {
+        const res = await connectAsync({ connector })
+        if (!res || !res.account) return
+        provider = res?.provider
+      } else {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        provider = signer?.provider?.provider
+      }
       
       setIsConnecting(true)
 
       await checkOrbisConnection({
-        provider: res?.provider,
+        provider,
         autoConnect: true
       })
 

@@ -6,6 +6,7 @@ import {
   ReactNode,
   ReactElement
 } from 'react'
+import { usePrevious } from 'react-use'
 import { useAccount } from 'wagmi'
 import { sleep } from '../utils/misc'
 
@@ -49,7 +50,8 @@ const OrbisProvider = ({
   const [profile, setProfile] = useState<IOrbisProfile | null>(null)
   const [hasLit, setHasLit] = useState(false)
 
-  const { isDisconnected } = useAccount()
+  const { address, isDisconnected } = useAccount()
+  const prevAddress = usePrevious(address)
 
   const connectOrbis: IOrbisContext['connectOrbis'] = async (
     provider,
@@ -119,10 +121,10 @@ const OrbisProvider = ({
   }
 
   useEffect(() => {
-    if (isDisconnected) {
+    if (isDisconnected || (address && prevAddress && address !== prevAddress)) {
       disconnectOrbis()
     }
-  }, [isDisconnected])
+  }, [isDisconnected, address, prevAddress])
 
   return (
     <OrbisContext.Provider

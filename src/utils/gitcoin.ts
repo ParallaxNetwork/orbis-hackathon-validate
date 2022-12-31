@@ -1,0 +1,16 @@
+export const gitcoinProviders = [
+  { name: 'Discord', description: 'Has a Discord account' },
+  { name: 'Ens', description: 'Has an ENS account' },
+  { name: 'EthGTEOneTxnProvider', description: 'At least 1 ETH transaction' },
+  { name: 'Facebook', description: 'Has a Facebook account' },
+  { name: 'FacebookProfilePicture', description: 'Has a Facebook profile picture' },
+  { name: 'FirstEthTxnProvider', description: 'First ETH transaction occurred more than 30 days ago' },
+  { name: 'FiveOrMoreGithubRepos', description: 'Has >= 5 Github repos' },
+  { name: 'ForkedGithubRepoProvider', description: 'At least 1 Github repo forked by another user' },
+  { name: 'Github', description: 'Has a Github account' },
+  { name: 'Google', description: 'Has a Google account' },
+  { name: 'Linkedin', description: 'Has a Linkedin account' },
+  { name: 'NFT', description: 'Holds at least 1 NFT' },
+  { name: 'POAP', description: 'Hold a POAP badge > 15 days' },
+  { name: 'Twitter', description: 'Has a Twitter account' },
+]

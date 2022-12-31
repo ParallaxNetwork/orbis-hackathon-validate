@@ -115,7 +115,7 @@ const Topic = ({
     <div
       className={`px-6 py-4 border-b border-b-muted ${
         isDeleting && 'animate-pulse'
-      } last:border-b-0`}
+      }`}
     >
       <header className="mb-2 flex items-center max-w-full justify-between gap-4">
         <div className="flex items-center gap-2">
@@ -197,6 +197,8 @@ const Topic = ({
           )}
         </div>
       </header>
+
+      {/* Date and Creator */}
       <div className="flex items-center gap-1 mb-3">
         <div className="inline-flex items-center gap-2">
           <CalendarIcon size="1.25rem" />
@@ -220,7 +222,8 @@ const Topic = ({
         </Link>
       </div>
       <div className="flex gap-4">
-        {topic.content?.media && topic.content?.media.length ? (
+        {/* Image */}
+        {topic.content?.media && topic.content?.media.length > 0 && (
           <div className="shrink-0 w-1/3">
             <Link
               to={`/topic/${topic.stream_id}`}
@@ -233,16 +236,33 @@ const Topic = ({
               />
             </Link>
           </div>
-        ) : (
-          ''
         )}
+
         <div className="grow">
+          {/* Body */}
           <div className="mb-4 text-secondary">
             {topic.content.body}
             {topic.count_commits > 1 && (
               <span className="text-small ml-1">(edited)</span>
             )}
           </div>
+
+          {/* Tags */}
+          {topic.content?.tags && topic.content?.tags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {topic.content.tags.map((tag) => (
+                <Link
+                  to={`/?tag=${tag.slug}`}
+                  key={tag.slug}
+                  className="badge badge-pill small bg-blue-medium"
+                >
+                  {tag.title}
+                </Link>
+              ))}
+            </div>
+          )}
+
+          {/* Stats */}
           <div className="flex flex-wrap items-center gap-2 mb-4">
             <span className="text-small font-bold">
               {subtopicsCount}{' '}

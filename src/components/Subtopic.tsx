@@ -94,10 +94,35 @@ const Subtopic = ({
   }
 
   const reacting: (type: string) => Promise<void> = async (type) => {
-    if (!profile || !orbis) return
-    const res = await orbis.react(post.stream_id, type)
-    if (res.status === 200) {
-      setReacted(type)
+    if (!profile || !orbis || reacted === type || !subtopic) return
+
+    setReacted(type)
+
+    const keys = {
+      like: 'count_likes' as keyof Pick<
+        IOrbisPost,
+        'count_likes' | 'count_downvotes' | 'count_haha'
+      >,
+      downvote: 'count_downvotes' as keyof Pick<
+        IOrbisPost,
+        'count_likes' | 'count_downvotes' | 'count_haha'
+      >
+    }
+
+    const _post: IOrbisPost = { ...subtopic }
+
+    // Decrease previous reaction
+    if (reacted) {
+      _post[keys[reacted as keyof typeof keys]] -= 1
+    }
+    // Increase previous reaction
+    _post[keys[type as keyof typeof keys]] += 1
+
+    setSubtopic({ ..._post })
+    const res = await orbis.react(subtopic.stream_id, type)
+    // Revert back if failed
+    if (res.status !== 200) {
+      setSubtopic({ ...subtopic })
     }
   }
 
@@ -112,9 +137,9 @@ const Subtopic = ({
   useEffect(() => {
     if (orbis && post) {
       getDetails()
-      getReacted()
+      if (profile) getReacted()
     }
-  }, [orbis, post])
+  }, [orbis, profile, post])
 
   if (!subtopic || isLoading) {
     return <LoadingAnimation />
@@ -240,25 +265,33 @@ const Subtopic = ({
       <footer className="flex flex-wrap items-center justify-between gap-4 mb-4 font-title">
         <div className="flex items-center gap-4">
           <button
-            className={`flex items-center gap-1.5 ${
-              reacted === 'like' && 'bg-primary'
-            }`}
+            className="flex items-center gap-1.5"
             onClick={() => reacting('like')}
             disabled={reacted === 'like'}
           >
-            <div className="btn btn-circle small bg-blue-medium text-white">
+            <div
+              className={`btn btn-circle small ${
+                reacted === 'like'
+                  ? 'bg-primary text-blue-dark'
+                  : 'bg-blue-medium text-white'
+              }`}
+            >
               <UpvoteIcon size="1rem" />
             </div>
             <span>{subtopic.count_likes}</span>
           </button>
           <button
-            className={`flex items-center gap-1.5 ${
-              reacted === 'downvote' && 'bg-primary'
-            }`}
+            className="flex items-center gap-1.5"
             onClick={() => reacting('downvote')}
             disabled={reacted === 'downvote'}
           >
-            <div className="btn btn-circle small bg-blue-medium text-white">
+            <div
+              className={`btn btn-circle small ${
+                reacted === 'downvote'
+                  ? 'bg-primary text-blue-dark'
+                  : 'bg-blue-medium text-white'
+              }`}
+            >
               <DownvoteIcon size="1rem" />
             </div>
             <span>{subtopic.count_downvotes}</span>

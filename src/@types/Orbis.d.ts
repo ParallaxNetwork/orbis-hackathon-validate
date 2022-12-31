@@ -473,14 +473,14 @@ interface IOrbisPostContent {
   reply_to?: string | null
   type?: string | null
   tags?: {
-    slug?: string | null
-    title?: string | null
+    slug: string
+    title: string
   }[]
   media?: {
     url: string
     gateway: string
   }[]
-  data?: object
+  data?: Record<string, any>
   encryptionRules?: IOrbisEncryptionRules | null
   encryptedMessage?: object | null
   encryptedBody?: IOrbisEncryptedBody | null

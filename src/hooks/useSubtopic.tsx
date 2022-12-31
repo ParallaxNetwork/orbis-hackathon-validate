@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useInterval } from 'react-use'
 import { useOrbis } from '../contexts/orbis'
+import { filterExpiredCredentials } from '../utils/orbis'
 
 export const useContributors = (subtopic: IOrbisPost | null) => {
   const { orbis, appContext } = useOrbis()
@@ -25,10 +26,10 @@ export const useContributors = (subtopic: IOrbisPost | null) => {
 
     if (data) {
       // Get unique by creator and create an array of strings
-      const unique = [
+      const uniqueDids = [
         ...new Set(data.map((item: { creator: string }) => item.creator))
       ]
-      setData(unique as string[])
+      setData(uniqueDids as string[])
     }
   }
 
@@ -78,4 +79,61 @@ export const useCommentsCount = (subtopic: IOrbisPost | null) => {
   }, [subtopic, orbis, appContext])
 
   return { count }
+}
+
+export const useVerifiedContributors = (
+  contributors: string[],
+  vcs: string[]
+) => {
+  const { orbis } = useOrbis()
+  const [data, setData] = useState<string[]>([])
+
+  const getVerified = async () => {
+    if (!contributors.length) {
+      setData([])
+      return
+    }
+
+    if (!vcs.length) {
+      setData(contributors)
+      return
+    }
+
+    const promises = contributors.map(async (did) => {
+      const { data } = await orbis.getCredentials(did as string)
+
+      const eligible = new Promise((resolve) => {
+        if (!data.length) resolve({ did, eligible: false })
+
+        if (data.length) {
+          const activeCredentials = filterExpiredCredentials(data)
+
+          // Loop through data and return only null family
+          const gitcoin = activeCredentials.filter(
+            (item: IOrbisCredential) => item.family === null
+          )
+
+          // Compare each gitcoin provider with verifiable credentials
+          const userVCs = gitcoin.filter((g: IOrbisCredential) =>
+            vcs?.includes(g.provider as string)
+          )
+
+          resolve({
+            did,
+            eligible: userVCs.length === vcs.length
+          })
+        }
+      })
+      return eligible
+    })
+    const res = await Promise.all(promises as Promise<any>[])
+    const verified = res.filter((r) => r.eligible).map((r) => r.did)
+    setData(verified as string[])
+  }
+
+  useEffect(() => {
+    getVerified()
+  }, [contributors, orbis, vcs])
+
+  return { data }
 }

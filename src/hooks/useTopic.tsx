@@ -5,9 +5,10 @@ import { useOrbis } from '../contexts/orbis'
 export const useSubtopicsCount = (topic: IOrbisPost) => {
   const { orbis, appContext } = useOrbis()
   const [count, setCount] = useState<number>(0)
+  const [data, setData] = useState<IOrbisPost[]>([])
 
   const countSubtopics = async () => {
-    const { error, count } = await orbis.api
+    const { data, error, count } = await orbis.api
       .from('orbis_v_posts')
       .select('*', { count: 'exact' })
       .eq('context', appContext)
@@ -19,6 +20,7 @@ export const useSubtopicsCount = (topic: IOrbisPost) => {
 
     if (count) {
       setCount(count)
+      setData(data)
     }
   }
 
@@ -30,28 +32,37 @@ export const useSubtopicsCount = (topic: IOrbisPost) => {
     countSubtopics()
   }, [topic, orbis, appContext])
 
-  return { count }
+  return { data, count }
 }
 
 export const useContributorsCount = (topic: IOrbisPost) => {
   const { orbis, appContext } = useOrbis()
   const [count, setCount] = useState<number>(0)
+  const [data, setData] = useState<string[]>([])
+
+  const { data: subtopics } = useSubtopicsCount(topic)
 
   const countContributors = async () => {
-    const { count, error } = await orbis.api
+    const subtopicsIds = subtopics.map((subtopic) => subtopic.stream_id)
+
+    const { data, error } = await orbis.api
       .from('orbis_v_posts')
-      .select('*', { count: 'exact' })
+      .select('creator')
       .eq('context', appContext)
-      .eq('master', topic.stream_id)
-      .not('reply_to', 'eq', topic.stream_id)
+      .in('master', subtopicsIds)
 
     if (error) {
       console.error(error)
       setCount(0)
     }
 
-    if (count) {
-      setCount(count)
+    if (data) {
+      // Get unique by creator and create an array of strings
+      const unique = [
+        ...new Set(data.map((item: { creator: string }) => item.creator))
+      ]
+      setCount(unique.length)
+      setData(unique as string[])
     }
   }
 
@@ -60,10 +71,12 @@ export const useContributorsCount = (topic: IOrbisPost) => {
   }, 15000)
 
   useEffect(() => {
-    countContributors()
-  }, [topic, orbis, appContext])
+    if (subtopics.length > 0) {
+      countContributors()
+    }
+  }, [subtopics, orbis, appContext])
 
-  return { count }
+  return { data, count }
 }
 
 export const useDiscussionsCount = (topic: IOrbisPost) => {

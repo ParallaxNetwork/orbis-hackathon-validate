@@ -3,6 +3,7 @@ import { useInterval } from 'react-use'
 import { useOrbis } from '../contexts/orbis'
 import Comment from './Comment'
 import CommentBox from './CommentBox'
+import ConnectButton from './ConnectButton'
 import Loading from './Loading'
 
 interface IGetComments {
@@ -11,7 +12,7 @@ interface IGetComments {
 }
 
 const Comments = ({ subtopic }: { subtopic: IOrbisPost }) => {
-  const { orbis, appContext } = useOrbis()
+  const { orbis, profile, appContext } = useOrbis()
 
   const [initialized, setInitialized] = useState<boolean>(false)
   const [comments, setComments] = useState<IOrbisPost[]>([])
@@ -21,6 +22,7 @@ const Comments = ({ subtopic }: { subtopic: IOrbisPost }) => {
   const [hasMore, setHasMore] = useState<boolean>(false)
   const [unreads, setUnreads] = useState<IOrbisPost[]>([])
   const [replyTo, setReplyTo] = useState<IOrbisPost | null>(null)
+  const [editComment, setEditComment] = useState<IOrbisPost | null>(null)
 
   const getComments: (options?: IGetComments) => Promise<void> = async (
     options
@@ -125,13 +127,24 @@ const Comments = ({ subtopic }: { subtopic: IOrbisPost }) => {
 
   return (
     <>
-      <div className="py-4 px-6 sticky top-0 border-b border-b-muted bg-blue-dark">
-        <CommentBox
-          subtopic={subtopic}
-          callback={(res) => onCommentCreated(res?.post)}
-          replyTo={replyTo}
-        />
-      </div>
+      {profile ? (
+        <div className="py-4 px-6 sticky top-0 border-b border-b-muted bg-blue-dark">
+          <CommentBox
+            subtopic={subtopic}
+            callback={(res) => onCommentCreated(res?.post)}
+            replyTo={replyTo}
+            cancelReply={() => setReplyTo(null)}
+            editPost={editComment}
+            cancelEdit={() => setEditComment(null)}
+          />
+        </div>
+      ) : (
+        <div className="py-4 px-6 flex justify-center border-b border-b-muted bg-blue-dark">
+          <div className="max-w-[320px] flex flex-col items-center">
+            <ConnectButton />
+          </div>
+        </div>
+      )}
 
       {initialized && comments.length === 0 ? (
         <div className="flex flex-col items-center p-6">
@@ -144,6 +157,7 @@ const Comments = ({ subtopic }: { subtopic: IOrbisPost }) => {
               key={comment.stream_id}
               comment={comment}
               subtopic={subtopic}
+              onEdit={setEditComment}
               onDeleted={removeComment}
               onReply={setReplyTo}
             />

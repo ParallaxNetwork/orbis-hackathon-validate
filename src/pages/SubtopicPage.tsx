@@ -12,16 +12,19 @@ const SubtopicPage = () => {
   const navigate = useNavigate()
 
   const [subtopic, setSubtopic] = useState<IOrbisPost | null>(null)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const getSubtopicDetails = async () => {
+    if (isLoading) return
+    setIsLoading(true)
     const { data, error } = await orbis.getPost(subtopicId as string)
     if (error) console.log(error)
     if (data) setSubtopic(data)
+    setIsLoading(false)
   }
 
   useEffect(() => {
     if (subtopicId) {
-      console.log(subtopicId)
       getSubtopicDetails()
     }
   }, [subtopicId])

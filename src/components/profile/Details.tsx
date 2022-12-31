@@ -66,18 +66,24 @@ const ProfileDetails = ({
 
       setCredsFamilies(grouped)
 
-      console.log(
-        'Gitcoin:',
-        grouped['gitcoin'].map((cred) => {
-          return cred.content.credentialSubject?.provider
-        })
+      const gitcoin = grouped['gitcoin'].sort((a, b) =>
+        a.content.credentialSubject.provider >
+        b.content.credentialSubject.provider
+          ? 1
+          : -1
       )
+
+      const krebit = grouped['krebit'].sort((a, b) =>
+        a.content.credentialSubject.type > b.content.credentialSubject.type
+          ? 1
+          : -1
+      )
+
+      console.log('Gitcoin:', gitcoin.map((g) => g.provider))
 
       console.log(
         'Krebit:',
-        grouped['krebit'].map((cred) => {
-          return cred.content.credentialSubject?.type
-        })
+        krebit.map((k) => k.content.type)
       )
     }
   }
@@ -148,7 +154,7 @@ const ProfileDetails = ({
 
         {/* Right */}
         <div className="md:w-1/2">
-          <h2 className="text-grey-lighter mb-2">Credentials</h2>
+          <h2 className="text-grey-lighter mb-2">Verifiable Credentials</h2>
           <div className="flex flex-wrap items-center gap-2">
             {/* {Object.keys(credsFamilies).map((family) => {
               const credentials = credsFamilies[family]

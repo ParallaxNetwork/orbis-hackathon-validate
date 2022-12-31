@@ -1,3 +1,4 @@
+import { ReactNode } from 'react'
 import {
   Root,
   Portal,
@@ -16,14 +17,16 @@ const AlertDialog = ({
   description,
   cancelText = 'Cancel',
   confirmText = 'Confirm',
+  maxWidth = 'max-w-[768px]',
   onConfirm
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void | Promise<void>
   title: string
-  description: string
+  description: ReactNode
   cancelText?: string
   confirmText?: string
+  maxWidth?: string
   onConfirm: () => void | Promise<void>
 }) => {
   return (
@@ -31,7 +34,9 @@ const AlertDialog = ({
       <Portal>
         <Overlay className="bg-grey-dark/70 fixed inset-0 data-[state=open]:animate-fadeIn data-[state=closed]:animate-fadeOut" />
         <div className="w-full h-full fixed inset-0 flex items-center justify-center">
-          <Content className="bg-blue-dark rounded-lg shadow-md data-[state=open]:animate-fadeInSlideUp">
+          <Content
+            className={`bg-blue-dark rounded-lg shadow-md ${maxWidth} data-[state=open]:animate-fadeInSlideUp`}
+          >
             <Title className="text-white font-title text-large text-center p-4 border-b border-b-muted">
               {title}
             </Title>

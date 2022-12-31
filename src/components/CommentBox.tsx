@@ -3,11 +3,10 @@ import { useDropzone } from 'react-dropzone'
 import { useOrbis } from '../contexts/orbis'
 import { MdImage as ImageIcon, MdPoll as VoteIcon } from 'react-icons/md'
 import { HiOutlineX as CloseIcon } from 'react-icons/hi'
-import { didToAddress, getUsername } from '../utils/orbis'
+import { didToAddress, getUsername, highlightMentions } from '../utils/orbis'
 import { appendToFilename, uploadToIpfs } from '../utils/misc'
 import MentionPopover from './MentionPopover'
 import ElectionDialog from './ElectionDialog'
-import { Election } from '@vocdoni/sdk'
 import Avatar from './profile/Avatar'
 
 interface ISubtopicDialogCallback {
@@ -22,12 +21,16 @@ const CommentBox = ({
   placeholder = 'Share your thoughts...',
   replyTo,
   editPost,
+  cancelReply,
+  cancelEdit,
   callback
 }: {
   subtopic: IOrbisPost
   placeholder?: string
   replyTo?: IOrbisPost | null
-  editPost?: IOrbisPost
+  editPost?: IOrbisPost | null
+  cancelReply: () => void
+  cancelEdit: () => void
   callback?: (options?: ISubtopicDialogCallback) => void
 }) => {
   const { orbis, appContext, profile } = useOrbis()
@@ -59,8 +62,6 @@ const CommentBox = ({
         return true
       })
 
-      console.log(newFiles)
-
       // Add new files to existing files
       setFiles((prevFiles) => [...prevFiles, ...newFiles])
     },
@@ -75,13 +76,6 @@ const CommentBox = ({
     },
     noClick: true
   })
-
-  const isDisabled = useMemo(() => {
-    if (!commentBox.current) return true
-    const text = commentBox.current?.innerText
-    console.log(text.length)
-    return text.length === 0
-  }, [commentBox.current?.innerText])
 
   const uploadPreviewUrls = useMemo(() => {
     let urls: string[] = []
@@ -172,32 +166,36 @@ const CommentBox = ({
     }, 100)
   }
 
-  const handleChange = () => {
-    if (!commentBox.current) return
-    saveCaretPos()
-  }
-
   const removeFile = (index: number) => {
     const newFiles = [...files]
     newFiles.splice(index, 1)
     setFiles(newFiles)
   }
 
-  const onElectionCreated = async (election: Election) => {
-    console.log(election)
-  }
-
-  const handleSubmit = async () => {
-    if (isSubmitting || isDisabled || !orbis || !profile) return
+  const handleSubmit = async (
+    body: string,
+    title?: string,
+    data?: IOrbisPostContent['data']
+  ) => {
+    if (
+      !body ||
+      !body.length ||
+      isSubmitting ||
+      !orbis ||
+      !profile
+    )
+      return
 
     setIsSubmitting(true)
 
     const postContent: IOrbisPostContent = {
-      body: commentBox.current.innerText,
+      body,
+      title: title ? title : '',
       context: appContext,
       mentions: mentions,
       master: subtopic.stream_id,
-      reply_to: replyTo ? replyTo.stream_id : subtopic.stream_id
+      reply_to: replyTo ? replyTo.stream_id : subtopic.stream_id,
+      data: data ? data : {}
     }
 
     const timestamp = Math.floor(Date.now() / 1000)
@@ -233,6 +231,9 @@ const CommentBox = ({
 
     let res
     if (editPost) {
+      // Add previous data to content
+      postContent.data = editPost.content.data
+
       // Edit post on Orbis
       res = await orbis.editPost(editPost.stream_id, postContent)
 
@@ -285,6 +286,17 @@ const CommentBox = ({
     setIsSubmitting(false)
   }
 
+  const onElectionCreated = async (data: {
+    title: string
+    description: string
+    electionId: string
+  }) => {
+    console.log('election created. creating post...')
+    await handleSubmit(data.description, data.title, {
+      electionId: data.electionId
+    })
+  }
+
   useEffect(() => {
     if (!commentBox.current) return
 
@@ -320,9 +332,43 @@ const CommentBox = ({
     }
   }, [focusOffset, focusNode])
 
+  useEffect(() => {
+    if (editPost) {
+      // Highlight all mentions
+      let { body } = editPost.content
+      const { mentions: _mentions } = editPost.content
+      if (_mentions?.length) {
+        setMentions(_mentions)
+        body = highlightMentions(editPost.content)
+      }
+      commentBox.current.innerHTML = body
+
+      // Focus to postbox
+      setTimeout(() => {
+        // setFocusOffset(body.length - 1)
+        // saveCaretPos()
+        commentBox.current.focus()
+        if (
+          typeof window.getSelection != 'undefined' &&
+          typeof document.createRange != 'undefined'
+        ) {
+          const range = document.createRange()
+          range.selectNodeContents(commentBox.current)
+          range.collapse(false)
+          const sel = window.getSelection()
+          sel?.removeAllRanges()
+          sel?.addRange(range)
+        }
+      }, 100)
+    } else {
+      commentBox.current.innerHTML = ''
+    }
+  }, [editPost])
+
   return (
     <>
       <div className="flex flex-col gap-4">
+        {/* Replying a post */}
         {replyTo && (
           <div className="flex items-center gap-2 overflow-x-hidden">
             <span className="shrink-0 text-small text-secondary">
@@ -335,13 +381,47 @@ const CommentBox = ({
                 defaultSeed={didToAddress(replyTo.creator_details.did)}
               />
             </div>
-            <div className="grow truncate">
+            <div className="grow truncate flex items-center">
               <span className="font-title text-small">
                 {getUsername(replyTo.creator_details)}
               </span>
+              <button
+                className="text-small text-red ml-auto"
+                onClick={cancelReply}
+              >
+                Cancel Reply
+              </button>
             </div>
           </div>
         )}
+
+        {/* Editing a post */}
+        {editPost && (
+          <div className="flex items-center gap-2 overflow-x-hidden">
+            <span className="shrink-0 text-small text-secondary">
+              Editing post:
+            </span>
+            <div className="shrink-0">
+              <Avatar
+                size={24}
+                src={editPost.creator_details?.profile?.pfp}
+                defaultSeed={didToAddress(editPost.creator_details.did)}
+              />
+            </div>
+            <div className="grow truncate flex items-center">
+              <span className="font-title text-small">
+                {getUsername(editPost.creator_details)}
+              </span>
+              <button
+                className="text-small text-red ml-auto"
+                onClick={cancelEdit}
+              >
+                Cancel Edit
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="relative">
           <div
             id="postbox"
@@ -349,7 +429,7 @@ const CommentBox = ({
             className="content-editable min-h-[140px] max-h-[320px] transition-all duration-300 empty:min-h-[46px] empty:focus:min-h-[140px]"
             contentEditable={true}
             data-placeholder={placeholder}
-            onKeyUp={handleChange}
+            onKeyUp={saveCaretPos}
             onMouseUp={saveCaretPos}
           />
           {searchText && (
@@ -389,7 +469,7 @@ const CommentBox = ({
             >
               <ImageIcon size="1.5rem" />
             </button>
-            {!replyTo && (
+            {!replyTo && !editPost && (
               <button
                 type="button"
                 className="text-blue-medium"
@@ -402,8 +482,8 @@ const CommentBox = ({
           <button
             type="button"
             className="btn btn-pill bg-primary"
-            onClick={handleSubmit}
-            disabled={isDisabled || isSubmitting}
+            onClick={() => handleSubmit(commentBox.current.innerText)}
+            disabled={isSubmitting}
           >
             Submit
           </button>

@@ -23,6 +23,7 @@ const TopicDialog = ({
     body: '',
     title: '',
     media: [],
+    tags: [],
     context: appContext
   })
   const [file, setFile] = useState<File | null>()
@@ -69,14 +70,65 @@ const TopicDialog = ({
     noClick: true
   })
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const { value } = e.target as HTMLInputElement
 
+    if (!value) return
+
+    // Remove last tag
+    if (e.key === 'Backspace' && value.length === 0) {
+      setFormContent({ ...formContent, tags: formContent?.tags?.slice(0, -1) })
+    }
+
+    if (e.key === 'Enter' || e.key === 'Tab') {
+      e.preventDefault()
+      if (value) {
+        const newTag = {
+          slug: value
+            .toLowerCase()
+            .trim()
+            .replace(/[^\w- ]+/g, '')
+            .replace(/ /g, '-')
+            .replace(/[-]+/g, '-'),
+          title: value
+        }
+
+        // Check if tag already exists
+        if (formContent.tags?.find((tag) => tag.slug === newTag.slug)) {
+          e.currentTarget.focus()
+          e.currentTarget.value = ''
+          return
+        }
+
+        const newTags = formContent.tags
+          ? [...formContent.tags, newTag]
+          : [newTag]
+
+        setFormContent({ ...formContent, tags: newTags })
+        
+        e.currentTarget.focus()
+        e.currentTarget.value = ''
+      }
+    }
+  }
+
+  const handleTagRemove = (slug: string) => {
+    const newTags = formContent.tags?.filter((tag) => tag.slug !== slug)
+    setFormContent({ ...formContent, tags: newTags })
+  }
+
+  const handleSubmit = async () => {
     if (isSubmitting || isDisabled) return
 
     setIsSubmitting(true)
 
     const postContent = { ...formContent }
+
+    // Return only unique tags
+    postContent.tags = postContent.tags?.filter(
+      (tag, index, self) =>
+        index === self.findIndex((t) => t.title === tag.title)
+    )
 
     if (file) {
       // Upload file to IPFS
@@ -111,7 +163,6 @@ const TopicDialog = ({
       res = await orbis.createPost(postContent)
     }
 
-    console.log(res)
     if (res.status !== 200) {
       alert('Error creating post')
     } else {
@@ -157,7 +208,7 @@ const TopicDialog = ({
 
   return (
     <Dialog open={showDialog} onOpenChange={setShowDialog}>
-      <form className="w-[735px] max-w-full p-6" onSubmit={handleSubmit}>
+      <div className="w-[735px] max-w-full p-6">
         <header className="flex items-center justify-between gap-2 mb-4">
           <h2 className="text-large font-title">
             {topic ? 'Edit' : 'Add New'} Topic
@@ -264,18 +315,53 @@ const TopicDialog = ({
               )}
             </div>
           </div>
+
+          {/* Tags */}
+          <div className="mb-4 flex flex-col">
+            <label
+              htmlFor="tags"
+              className="text-small ml-2 mb-1 text-grey-lighter"
+            >
+              Tags
+            </label>
+            <div className="w-full py-2 px-3 bg-blue-input rounded-lg border-transparent flex flex-wrap items-center gap-2 focus-within:border-blue-medium">
+              {formContent.tags &&
+                formContent.tags.map((tag) => (
+                  <div
+                    className="badge badge-pill gap-2 pr-1 small bg-blue-medium"
+                    key={tag.slug}
+                  >
+                    <span>{tag.title}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleTagRemove(tag.slug)}
+                    >
+                      x
+                    </button>
+                  </div>
+                ))}
+              <input
+                id="tags"
+                type="text"
+                className="grow !w-auto !p-0 bg-transparent border-none outline-none focus:ring-0"
+                placeholder="Add a tag"
+                onKeyDown={handleTagKeyDown}
+              />
+            </div>
+          </div>
         </div>
 
         <footer className="flex justify-end">
           <button
-            type="submit"
+            type="button"
             className="btn btn-primary btn-pill"
             disabled={isDisabled || isSubmitting}
+            onClick={handleSubmit}
           >
             {isSubmitting ? 'Submitting...' : 'Submit'}
           </button>
         </footer>
-      </form>
+      </div>
     </Dialog>
   )
 }
