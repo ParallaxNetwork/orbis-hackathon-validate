@@ -57,8 +57,9 @@ const Comments = ({ subtopic }: { subtopic: IOrbisPost }) => {
         setPausePoll(false)
         setIsLoading(false)
       } else {
+        const _combined = [...unreads, ..._comments]
         const unique = data.filter(
-          (a) => !_comments.some((b) => a.stream_id === b.stream_id)
+          (a) => !_combined.some((b) => a.stream_id === b.stream_id)
         )
         if (unique.length > 0) {
           setUnreads([...unique, ...unreads])
@@ -143,6 +144,20 @@ const Comments = ({ subtopic }: { subtopic: IOrbisPost }) => {
           <div className="max-w-[320px] flex flex-col items-center">
             <ConnectButton />
           </div>
+        </div>
+      )}
+
+      {unreads.length > 0 && (
+        <div className="flex items-center justify-center py-4">
+          <button
+            className="btn btn-primary btn-pill btn-pill large"
+            onClick={() => {
+              setComments([...unreads, ...comments])
+              setUnreads([])
+            }}
+          >
+            Show {unreads.length} New {unreads.length > 1 ? 'comments' : 'comment'}
+          </button>
         </div>
       )}
 

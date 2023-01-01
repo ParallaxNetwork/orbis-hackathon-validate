@@ -64,8 +64,9 @@ const Topics = ({ query }: { query?: TopicsQuery }) => {
         setPausePoll(false)
         setIsLoading(false)
       } else {
+        const _combined = [...unreads, ..._topics]
         const unique = data.filter(
-          (a) => !_topics.some((b) => a.stream_id === b.stream_id)
+          (a) => !_combined.some((b) => a.stream_id === b.stream_id)
         )
         if (unique.length > 0) {
           setUnreads([...unique, ...unreads])
@@ -146,9 +147,12 @@ const Topics = ({ query }: { query?: TopicsQuery }) => {
         <div className="flex items-center justify-center py-4">
           <button
             className="btn btn-primary btn-pill btn-pill large"
-            onClick={() => setUnreads([])}
+            onClick={() => {
+              setTopics([...unreads, ...topics])
+              setUnreads([])
+            }}
           >
-            {unreads.length} New {unreads.length > 1 ? 'topics' : 'topic'} Found
+            Show {unreads.length} New {unreads.length > 1 ? 'topics' : 'topic'}
           </button>
         </div>
       )}
