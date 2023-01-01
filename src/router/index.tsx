@@ -8,7 +8,7 @@ import Loading from '../components/Loading'
 
 const LoadingPage = () => {
   return (
-    <div className='my-6'>
+    <div className="my-6">
       <Loading />
     </div>
   )
