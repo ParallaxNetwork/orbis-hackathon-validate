@@ -125,10 +125,12 @@ const TopicDialog = ({
     const postContent = { ...formContent }
 
     // Return only unique tags
-    postContent.tags = postContent.tags?.filter(
-      (tag, index, self) =>
-        index === self.findIndex((t) => t.title === tag.title)
-    )
+    if (postContent.tags?.length) {
+      postContent.tags = postContent.tags?.filter(
+        (tag, index, self) =>
+          index === self.findIndex((t) => t.title === tag.title)
+      )
+    }
 
     if (file) {
       // Upload file to IPFS
@@ -344,7 +346,7 @@ const TopicDialog = ({
                 id="tags"
                 type="text"
                 className="grow !w-auto !p-0 bg-transparent border-none outline-none focus:ring-0"
-                placeholder="Add a tag"
+                placeholder="Type and press enter to add a tag"
                 onKeyDown={handleTagKeyDown}
               />
             </div>
