@@ -72,7 +72,6 @@ const Comments = ({ subtopic }: { subtopic: IOrbisPost }) => {
 
   const onCommentCreated = (comment: IOrbisPost | undefined) => {
     if (!comment) return
-    console.log(comment)
     setComments([comment, ...comments])
   }
 

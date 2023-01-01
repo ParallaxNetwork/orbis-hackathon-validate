@@ -48,7 +48,6 @@ const Election = ({ electionId }: { electionId: string }) => {
     if (isLoading) return
     setIsLoading(true)
     const _election = await vocdoniClient?.fetchElection(electionId)
-    console.log(_election)
     if (_election) setElection(_election.raw)
     setIsLoading(false)
   }
@@ -83,14 +82,12 @@ const Election = ({ electionId }: { electionId: string }) => {
   const castVote = async () => {
     if (isSubmitting || !vocdoniClient || !election) return
     setIsSubmitting(true)
-
-    console.log(selected)
     
     try {
       vocdoniClient.setElectionId(election.electionId)
       const vote = new Vote(selected)
       const voteId = await vocdoniClient.submitVote(vote)
-      console.log(voteId)
+      
       // Refetch election
       if (voteId) fetchElection()
     } catch (error) {
@@ -107,7 +104,6 @@ const Election = ({ electionId }: { electionId: string }) => {
 
   useEffect(() => {
     if (election) {
-      console.log(election)
       const _selected = []
       for (let i = 0; i < election.metadata.questions.length; i++) {
         _selected.push(-1)

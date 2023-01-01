@@ -188,7 +188,6 @@ const TopicDialog = ({
 
   useEffect(() => {
     if (topic) {
-      console.log('fill topic data')
       const { content: topicContent } = topic
       setFormContent({
         body: topicContent.body,

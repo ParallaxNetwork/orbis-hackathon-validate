@@ -8,7 +8,6 @@ const ExplorePage = () => {
   let query: any = { algorithm: 'all-context-master-posts' }
 
   if (tag) {
-    console.log(tag)
     query = { tag, only_master: true }
   }
 

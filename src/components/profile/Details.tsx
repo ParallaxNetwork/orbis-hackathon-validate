@@ -28,7 +28,6 @@ const ProfileDetails = ({
 
   const getCredentials = async () => {
     const { data, error } = await orbis.getCredentials(profile?.did)
-    console.log(data, profile)
     if (error) console.error(error)
     if (data) {
       const filtered = filterExpiredCredentials(data)
@@ -47,8 +46,6 @@ const ProfileDetails = ({
         return acc
       }, {} as { [key: string]: IOrbisCredential[] })
 
-      console.log(grouped)
-
       setCredsFamilies(grouped)
     }
   }
@@ -64,7 +61,6 @@ const ProfileDetails = ({
       setIsFollowing(false)
     }
     if (data) {
-      console.log(data)
       setIsFollowing(data)
     }
   }

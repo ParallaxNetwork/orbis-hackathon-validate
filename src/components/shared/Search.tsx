@@ -15,7 +15,6 @@ const Search = () => {
   ) => Promise<void> = async (e) => {
     e.preventDefault()
     setIsLoading(true)
-    console.log('search topics')
     const { data, error } = await orbis.api
       .from('orbis_v_posts')
       .select()

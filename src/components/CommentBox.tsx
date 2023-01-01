@@ -291,7 +291,6 @@ const CommentBox = ({
     description: string
     electionId: string
   }) => {
-    console.log('election created. creating post...')
     await handleSubmit(data.description, data.title, {
       electionId: data.electionId
     })

@@ -173,7 +173,6 @@ const ElectionDialog = ({
       endDate: DateTime.now().plus({ days }).toJSDate(),
       census
     }
-    console.log(electionData)
 
     // Create the election
     const election = Election.from(electionData)
@@ -191,8 +190,6 @@ const ElectionDialog = ({
         filteredChoices
       )
     }
-
-    console.log(election)
 
     const electionId = await vocdoniClient.createElection(election)
 
