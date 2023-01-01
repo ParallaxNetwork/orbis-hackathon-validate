@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { PassportScorer } from '@gitcoinco/passport-sdk-scorer'
 import { useOrbis } from '../../contexts/orbis'
+import { useTopicsCount } from '../../hooks/useTopic'
 import {
   filterExpiredCredentials,
   getUsername,
@@ -18,6 +19,7 @@ const ProfileDetails = ({
 }) => {
   const src = profile?.details?.profile?.pfp
   const { orbis, profile: loggedProfile } = useOrbis()
+  const { count: topicsCount } = useTopicsCount(profile?.did)
 
   const [showEditDialog, setShowEditDialog] = useState<boolean>(false)
   const [credsFamilies, setCredsFamilies] = useState<
@@ -65,26 +67,6 @@ const ProfileDetails = ({
       console.log(grouped)
 
       setCredsFamilies(grouped)
-
-      const gitcoin = grouped['gitcoin'].sort((a, b) =>
-        a.content.credentialSubject.provider >
-        b.content.credentialSubject.provider
-          ? 1
-          : -1
-      )
-
-      const krebit = grouped['krebit'].sort((a, b) =>
-        a.content.credentialSubject.type > b.content.credentialSubject.type
-          ? 1
-          : -1
-      )
-
-      console.log('Gitcoin:', gitcoin.map((g) => g.provider))
-
-      console.log(
-        'Krebit:',
-        krebit.map((k) => k.content.type)
-      )
     }
   }
 
@@ -147,7 +129,7 @@ const ProfileDetails = ({
               <span className="text-secondary">Following</span>
             </p>
             <p>
-              15 <span className="text-secondary">Topics</span>
+              {topicsCount} <span className="text-secondary">Topics</span>
             </p>
           </div>
         </div>
@@ -156,17 +138,27 @@ const ProfileDetails = ({
         <div className="md:w-1/2">
           <h2 className="text-grey-lighter mb-2">Verifiable Credentials</h2>
           <div className="flex flex-wrap items-center gap-2">
-            {/* {Object.keys(credsFamilies).map((family) => {
-              const credentials = credsFamilies[family]
-              credentials.map((credential) => {
-                const { type } = credential
+            {credsFamilies &&
+              credsFamilies['gitcoin'] &&
+              credsFamilies['gitcoin'].map((cred, index) => {
+                if (index >= 7) return ''
                 return (
-                  <div key={credential.stream_id} className="badge">
-                    {type}
+                  <div
+                    key={cred.stream_id}
+                    className="badge badge-pill small bg-blue-medium text-small"
+                  >
+                    {cred.provider}
                   </div>
                 )
-              })
-            })} */}
+              })}
+
+            {credsFamilies &&
+              credsFamilies['gitcoin'] &&
+              credsFamilies['gitcoin'].length > 7 && (
+              <div className="badge badge-pill small bg-blue-medium text-small">
+                +{credsFamilies['gitcoin'].length - 7}
+              </div>
+            )}
           </div>
         </div>
       </div>
