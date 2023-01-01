@@ -87,7 +87,7 @@ const Subtopics = ({ topic }: { topic: IOrbisPost }) => {
       return (
         <div className="py-4">
           <button
-            className="btn btn-primary btn-pill btn-pill large"
+            className="btn btn-pill bg-primary large"
             onClick={() => getSubtopics()}
           >
             Load More
@@ -128,7 +128,7 @@ const Subtopics = ({ topic }: { topic: IOrbisPost }) => {
       {unreads.length > 0 && (
         <div className="flex items-center justify-center py-4">
           <button
-            className="btn btn-primary btn-pill btn-pill large"
+            className="btn btn-pill bg-primary large"
             onClick={() => setUnreads([])}
           >
             {unreads.length} New {unreads.length > 1 ? 'subtopics' : 'subtopic'}{' '}

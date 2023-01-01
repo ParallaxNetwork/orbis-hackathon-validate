@@ -33,9 +33,9 @@ const LoadingAnimation = () => {
   return (
     <div className="px-6 py-4 border-b border-b-muted animate-pulse last:border-b-0">
       <div className="mb-4 flex items-center max-w-full justify-between gap-4">
-        <div className="w-56 h-6 rounded-full bg-white/20" />
+        <div className="w-40 md:w-56 h-6 rounded-full bg-white/20" />
         <div className="shrink-0 inline-flex items-center gap-2">
-          <div className="w-36 h-8 rounded-full bg-white/20" />
+          <div className="w-24 md:w-36 h-8 rounded-full bg-white/20" />
           <div className="w-8 h-8 rounded-full bg-white/20" />
         </div>
       </div>
@@ -117,18 +117,8 @@ const Topic = ({
         isDeleting && 'animate-pulse'
       }`}
     >
-      <header className="mb-2 flex items-center max-w-full justify-between gap-4">
-        <div className="flex items-center gap-2">
-          {backTo && <BackButton link={backTo} />}
-          <Link
-            to={`/topic/${topic.stream_id}`}
-            className="grow text-xlarge font-title truncate"
-          >
-            {topic.content?.title ??
-              `Untitled Topic - ${shortAddress(topic.stream_id)}`}
-          </Link>
-        </div>
-        <div className="shrink-0 inline-flex items-center gap-2">
+      <header className="mb-2 flex flex-wrap items-center max-w-full justify-between gap-4">
+        <div className="w-full md:w-auto shrink-0 inline-flex items-center gap-2 md:order-last">
           <button
             className={`btn btn-pill ${
               favourites?.includes(topic.stream_id)
@@ -154,7 +144,7 @@ const Topic = ({
               <Popover
                 trigger={
                   <button
-                    className="btn btn-circle bg-blue-lightest"
+                    className="btn btn-circle bg-blue-lightest ml-auto"
                     title="Options"
                   >
                     <EllipsisIcon size="1.25rem" />
@@ -196,6 +186,16 @@ const Topic = ({
             </>
           )}
         </div>
+        <div className="flex items-center gap-2">
+          {backTo && <BackButton link={backTo} />}
+          <Link
+            to={`/topic/${topic.stream_id}`}
+            className="grow text-large md:text-xlarge font-title"
+          >
+            {topic.content?.title ??
+              `Untitled Topic - ${shortAddress(topic.stream_id)}`}
+          </Link>
+        </div>
       </header>
 
       {/* Date and Creator */}
@@ -221,10 +221,10 @@ const Topic = ({
           </div>
         </Link>
       </div>
-      <div className="flex gap-4">
+      <div className="flex flex-wrap gap-4 md:flex-nowrap">
         {/* Image */}
         {topic.content?.media && topic.content?.media.length > 0 && (
-          <div className="shrink-0 w-1/3">
+          <div className="md:shrink-0 md:w-1/3">
             <Link
               to={`/topic/${topic.stream_id}`}
               className="block aspect-video rounded-lg overflow-hidden bg-secondary"

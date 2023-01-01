@@ -481,7 +481,7 @@ const SubtopicDialog = ({
         <footer className="flex justify-end">
           <button
             type="submit"
-            className="btn btn-primary btn-pill"
+            className="btn btn-pill bg-primary"
             disabled={isDisabled || isSubmitting}
           >
             {isSubmitting ? 'Submitting...' : 'Submit'}

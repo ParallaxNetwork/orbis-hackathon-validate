@@ -97,7 +97,7 @@ const Topics = ({ query }: { query?: TopicsQuery }) => {
       return (
         <div className="py-4">
           <button
-            className="btn btn-primary btn-pill btn-pill large"
+            className="btnbtn-pill bg-primary large"
             onClick={() => getTopics()}
           >
             Load More
@@ -131,7 +131,7 @@ const Topics = ({ query }: { query?: TopicsQuery }) => {
         <div className="text-secondary mb-6">No topic found</div>
         {profile && (
           <button
-            className="btn btn-primary btn-pill btn-pill large"
+            className="btnbtn-pill bg-primary large"
             onClick={() => setShowTopicDialog(true)}
           >
             + New Topic
@@ -146,7 +146,7 @@ const Topics = ({ query }: { query?: TopicsQuery }) => {
       {unreads.length > 0 && (
         <div className="flex items-center justify-center py-4">
           <button
-            className="btn btn-primary btn-pill btn-pill large"
+            className="btnbtn-pill bg-primary large"
             onClick={() => {
               setTopics([...unreads, ...topics])
               setUnreads([])

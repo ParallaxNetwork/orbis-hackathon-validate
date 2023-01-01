@@ -96,7 +96,7 @@ const Comments = ({ subtopic }: { subtopic: IOrbisPost }) => {
       return (
         <div className="py-4">
           <button
-            className="btn btn-primary btn-pill btn-pill large"
+            className="btn btn-pill bg-primary large"
             onClick={() => getComments()}
           >
             Load More
@@ -129,7 +129,7 @@ const Comments = ({ subtopic }: { subtopic: IOrbisPost }) => {
   return (
     <>
       {profile ? (
-        <div className="py-4 px-6 sticky top-0 border-b border-b-muted bg-blue-dark">
+        <div className="py-4 px-6 sticky top-16 z-10 md:top-0 border-b border-b-muted bg-blue-dark">
           <CommentBox
             subtopic={subtopic}
             callback={(res) => onCommentCreated(res?.post)}
@@ -150,13 +150,14 @@ const Comments = ({ subtopic }: { subtopic: IOrbisPost }) => {
       {unreads.length > 0 && (
         <div className="flex items-center justify-center py-4">
           <button
-            className="btn btn-primary btn-pill btn-pill large"
+            className="btn btn-pill bg-primary large"
             onClick={() => {
               setComments([...unreads, ...comments])
               setUnreads([])
             }}
           >
-            Show {unreads.length} New {unreads.length > 1 ? 'comments' : 'comment'}
+            Show {unreads.length} New{' '}
+            {unreads.length > 1 ? 'comments' : 'comment'}
           </button>
         </div>
       )}

@@ -51,7 +51,7 @@ const FavouritesPage = () => {
     return (
       <div className="flex flex-col items-center justify-center p-6 gap-6">
         You have no favourites yet.
-        <Link to="/" className="btn btn-primary btn-pill btn-pill large">
+        <Link to="/" className="btn btn-pill bg-primary large">
           Go to Explore Page
         </Link>
       </div>

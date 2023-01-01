@@ -17,7 +17,7 @@ const AppNav = () => {
       {profile && (
         <div className="mb-6 px-6">
           <button
-            className="btn btn-primary btn-pill btn-pill large"
+            className="btn btn-pill bg-primary large"
             onClick={() => setShowTopicDialog(true)}
           >
             + New Topic

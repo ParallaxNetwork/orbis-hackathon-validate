@@ -212,7 +212,7 @@ const ProfileDialog = ({
         <footer className="flex justify-end">
           <button
             type="submit"
-            className="btn btn-primary btn-pill"
+            className="btn btn-pill bg-primary"
             disabled={!formData?.username || isUpdating}
           >
             {isUpdating ? 'Updating...' : 'Update'}

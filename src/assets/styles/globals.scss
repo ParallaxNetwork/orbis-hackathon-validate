@@ -110,10 +110,10 @@
     @apply flex flex-col;
 
     &-item {
-      @apply py-2.5 px-6 text-xlarge font-title text-white border-r-4 border-r-transparent;
+      @apply py-2.5 px-6 text-xlarge font-title rounded-xl md:rounded-none text-white md:border-r-4 md:border-r-transparent;
 
       &.active {
-        @apply bg-primary/10 border-r-primary text-primary;
+        @apply bg-primary/10 md:border-r-primary text-primary;
       }
     }
   }

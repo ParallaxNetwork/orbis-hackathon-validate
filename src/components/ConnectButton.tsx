@@ -7,7 +7,7 @@ import { CgSpinner as SpinnerIcon } from 'react-icons/cg'
 import Dialog from './shared/Dialog'
 import Loading from './Loading'
 
-const ConnectButton = () => {
+const ConnectButton = ({ withMessage = true }: { withMessage?: boolean }) => {
   const { connectAsync, connectors, isLoading, pendingConnector } = useConnect()
   const { data: signer } = useSigner()
   const { checkOrbisConnection } = useOrbis()
@@ -28,7 +28,7 @@ const ConnectButton = () => {
         // @ts-ignore
         provider = signer?.provider?.provider
       }
-      
+
       setIsConnecting(true)
 
       await checkOrbisConnection({
@@ -44,14 +44,18 @@ const ConnectButton = () => {
 
   return (
     <>
-      <h1 className="leading-none text-xlarge font-title mb-2">
-        Want to discuss your idea?
-      </h1>
-      <p className="text-secondary text-small mb-4">
-        Connect your wallet to join the community in Validate
-      </p>
+      {withMessage && (
+        <>
+          <h1 className="leading-none text-xlarge font-title mb-2">
+            Want to discuss your idea?
+          </h1>
+          <p className="text-secondary text-small mb-4">
+            Connect your wallet to join the community in Validate
+          </p>
+        </>
+      )}
       <button
-        className="btn btn-primary btn-pill btn-pill large"
+        className="btn btn-pill bg-primary large"
         onClick={() => setOpen(true)}
       >
         Connect Wallet
@@ -71,7 +75,7 @@ const ConnectButton = () => {
               {connectors.map((connector) => (
                 <button
                   key={connector.id}
-                  className="btn btn-primary btn-pill"
+                  className="btn btn-pill bg-primary"
                   disabled={!connector.ready}
                   onClick={() => handleConnection(connector)}
                 >
