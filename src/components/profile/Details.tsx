@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { PassportScorer } from '@gitcoinco/passport-sdk-scorer'
 import { useOrbis } from '../../contexts/orbis'
 import { useTopicsCount } from '../../hooks/useTopic'
 import {
@@ -21,31 +20,15 @@ const ProfileDetails = ({
   const { orbis, profile: loggedProfile } = useOrbis()
   const { count: topicsCount } = useTopicsCount(profile?.did)
 
+  const [isFollowing, setIsFollowing] = useState<boolean>(false)
   const [showEditDialog, setShowEditDialog] = useState<boolean>(false)
   const [credsFamilies, setCredsFamilies] = useState<
     Record<string, IOrbisCredential[]>
   >({})
 
-  const scorer = new PassportScorer([
-    {
-      provider: 'FirstEthTxnProvider',
-      issuer: 'did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC',
-      score: 0.5
-    },
-    {
-      provider: 'Twitter',
-      issuer: 'did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC',
-      score: 0.5
-    }
-  ])
-
-  const getScore = async () => {
-    const score = await scorer.getScore(address as string)
-    console.log({ score })
-  }
-
   const getCredentials = async () => {
     const { data, error } = await orbis.getCredentials(profile?.did)
+    console.log(data, profile)
     if (error) console.error(error)
     if (data) {
       const filtered = filterExpiredCredentials(data)
@@ -70,12 +53,42 @@ const ProfileDetails = ({
     }
   }
 
+  const getIsFollowing = async () => {
+    if (!orbis || !profile || !loggedProfile) return
+    const { data, error } = await orbis.getIsFollowing(
+      loggedProfile.did,
+      profile?.did
+    )
+    if (error) {
+      console.error(error)
+      setIsFollowing(false)
+    }
+    if (data) {
+      console.log(data)
+      setIsFollowing(data)
+    }
+  }
+
+  const setFollow = async () => {
+    if (!orbis || !profile || !loggedProfile) return
+    const res = await orbis.setFollow(
+      profile.did,
+      !isFollowing
+    )
+    if (res.status === 200) {
+      setIsFollowing(!isFollowing)
+    }
+  }
+
   useEffect(() => {
     if (orbis && profile) {
       getCredentials()
-      getScore()
+
+      if (loggedProfile) {
+        getIsFollowing()
+      }
     }
-  }, [profile])
+  }, [orbis, profile, loggedProfile])
 
   return (
     <div className="p-6 border-b border-b-muted">
@@ -100,18 +113,30 @@ const ProfileDetails = ({
                 <div className="badge badge-pill bg-grey-dark text-secondary text-small">
                   {shortAddress(address)}
                 </div>
-                {loggedProfile && loggedProfile.did === profile?.did && (
+                {loggedProfile && profile && (
                   <>
-                    <button
-                      className="btn btn-pill bg-transparent text-primary border-2 border-primary hover:bg-primary hover:text-blue-dark"
-                      onClick={() => setShowEditDialog(true)}
-                    >
-                      Edit Profile
-                    </button>
-                    <ProfileDialog
-                      showDialog={showEditDialog}
-                      setShowDialog={setShowEditDialog}
-                    />
+                    {loggedProfile.did === profile?.did ? (
+                      <>
+                        <button
+                          className="btn btn-pill bg-transparent text-primary border-2 border-primary hover:bg-primary hover:text-blue-dark"
+                          onClick={() => setShowEditDialog(true)}
+                        >
+                          Edit Profile
+                        </button>
+                        <ProfileDialog
+                          showDialog={showEditDialog}
+                          setShowDialog={setShowEditDialog}
+                        />
+                      </>
+                    ) : (
+                      <button
+                        className="btn btn-pill border-2 border-primary data-[following=true]:text-blue-dark data-[following=true]:bg-primary data-[following=false]:text-primary data-[following=false]:bg-transparent"
+                        data-following={isFollowing}
+                        onClick={() => setFollow()}
+                      >
+                        {!isFollowing ? 'Follow' : 'Following'}
+                      </button>
+                    )}
                   </>
                 )}
               </div>
