@@ -84,15 +84,31 @@ export const useDiscussionsCount = (topic: IOrbisPost) => {
   const [count, setCount] = useState<number>(0)
 
   const countDiscussions = async () => {
-    const { count, error } = await orbis.api
+    // Get direct replies to the topic
+    const { data, error: errorSubtopics } = await orbis.api
+      .from('orbis_v_posts')
+      .select('stream_id')
+      .eq('context', appContext)
+      .eq('reply_to', topic.stream_id)
+
+    if (errorSubtopics) {
+      console.error(errorSubtopics)
+      setCount(0)
+      return
+    }
+
+    const subtopicIds = data.map(
+      (item: { stream_id: string }) => item.stream_id
+    )
+
+    const { count, error: errorDiscussions } = await orbis.api
       .from('orbis_v_posts')
       .select('*', { count: 'exact' })
       .eq('context', appContext)
-      .eq('master', topic.stream_id)
-      .not('reply_to', 'eq', topic.stream_id)
+      .in('master', subtopicIds)
 
-    if (error) {
-      console.error(error)
+    if (errorDiscussions) {
+      console.error(errorDiscussions)
       setCount(0)
     }
 
@@ -108,6 +124,39 @@ export const useDiscussionsCount = (topic: IOrbisPost) => {
   useEffect(() => {
     countDiscussions()
   }, [topic, orbis, appContext])
+
+  return { count }
+}
+
+export const useTopicsCount = (did: string) => {
+  const { orbis, appContext } = useOrbis()
+  const [count, setCount] = useState<number>(0)
+
+  const countTopics = async () => {
+    const { count, error } = await orbis.api
+      .from('orbis_v_posts')
+      .select('*', { count: 'exact' })
+      .eq('context', appContext)
+      .eq('creator', did)
+      .is('master', null)
+
+    if (error) {
+      console.error(error)
+      setCount(0)
+    }
+
+    if (count) {
+      setCount(count)
+    }
+  }
+
+  useInterval(() => {
+    countTopics()
+  }, 15000)
+
+  useEffect(() => {
+    countTopics()
+  }, [did, orbis, appContext])
 
   return { count }
 }
