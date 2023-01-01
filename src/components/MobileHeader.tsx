@@ -8,7 +8,7 @@ const MobileHeader = () => {
   const { setShowTopicDialog } = useAppData()
 
   return (
-    <div className="sticky top-0 flex gap-4 items-center z-50 bg-blue-dark px-4 h-14 border-b border-b-muted md:hidden">
+    <div className="sticky top-0 flex gap-4 items-center z-10 bg-blue-dark px-4 h-14 border-b border-b-muted md:hidden">
       <Link to="/" className="block select-none">
         <img src="/logo.svg" alt="Validate" className="w-[90px]" />
       </Link>

@@ -7,7 +7,7 @@ import {
 
 const MobileNav = () => {
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-blue-dark h-16 z-30 border-t border-t-muted flex items-center justify-around gap-6 md:hidden">
+    <div className="fixed bottom-0 left-0 right-0 bg-blue-dark h-16 z-10 border-t border-t-muted flex items-center justify-around gap-6 md:hidden">
       <NavLink
         to="/favourites"
         className={({ isActive }) =>

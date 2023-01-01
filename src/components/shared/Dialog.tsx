@@ -13,7 +13,7 @@ const Dialog = ({
   return (
     <Root open={open} onOpenChange={onOpenChange}>
       <Portal>
-        <Overlay className="flex justify-center py-6 bg-grey-dark/70 fixed inset-0 overflow-x-hidden overflow-y-auto data-[state=open]:animate-fadeIn data-[state=closed]:animate-fadeOut">
+        <Overlay className="flex justify-center py-6 z-30 bg-grey-dark/70 fixed inset-0 overflow-x-hidden overflow-y-auto data-[state=open]:animate-fadeIn data-[state=closed]:animate-fadeOut">
           <Content
             asChild={true}
             className="bg-blue-dark my-auto rounded-lg shadow-md data-[state=open]:animate-fadeInSlideUp"
