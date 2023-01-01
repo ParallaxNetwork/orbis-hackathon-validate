@@ -144,7 +144,7 @@ const TopicDialog = ({
         if (cid) {
           postContent.media = [
             {
-              url: `ipfs://${cid}/${newName}`,
+              url: `ipfs://${cid}`,
               gateway: 'https://nftstorage.link/ipfs/'
             }
           ]
