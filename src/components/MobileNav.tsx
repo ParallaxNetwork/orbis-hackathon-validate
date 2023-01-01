@@ -1,8 +1,8 @@
 import { NavLink } from 'react-router-dom'
 import {
   MdOutlineExplore as ExploreIcon,
-  MdOutlineCollections as CollectionIcon,
-  MdOutlineAccountCircle as ProfileIcon,
+  MdOutlineBookmarkBorder as FavouriteIcon,
+  MdOutlineAccountCircle as ProfileIcon
 } from 'react-icons/md'
 
 const MobileNav = () => {
@@ -14,7 +14,7 @@ const MobileNav = () => {
           isActive ? 'nav-item active' : 'nav-item'
         }
       >
-        <CollectionIcon size="1.5rem" />
+        <FavouriteIcon size="1.5rem" />
       </NavLink>
       <NavLink
         to="/"
