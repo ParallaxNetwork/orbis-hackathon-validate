@@ -5,13 +5,19 @@ import wasm from 'vite-plugin-wasm'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [wasm(), react()],
+  build: {
+    target: 'esnext'
+  },
   optimizeDeps: {
-    exclude: ['@spruceid/didkit-wasm']
+    exclude: ['@spruceid/didkit-wasm'],
+    esbuildOptions: {
+      target: 'esnext'
+    }
   },
   resolve: {
     alias: {
       buffer: 'buffer/',
-      util: 'util/',
+      util: 'util/'
     }
   }
 })
