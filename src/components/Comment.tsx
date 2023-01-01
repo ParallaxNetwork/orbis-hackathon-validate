@@ -47,10 +47,42 @@ const Comment = ({
   const [isDeleting, setIsDeleting] = useState<boolean>(false)
   const [showDeleteAlert, setShowDeleteAlert] = useState<boolean>(false)
   const [openOptions, setOpenOptions] = useState<boolean>(false)
+  const [upvotes, setUpvotes] = useState<number>(count_likes)
+  const [downvotes, setDownvotes] = useState<number>(count_downvotes)
 
-  const reacting = async (reaction: string) => {
-    const res = await orbis.react(comment.stream_id, reaction)
-    console.log(res)
+  const reacting = async (type: string) => {
+    if (!profile || !orbis || reacted === type || !comment) return
+    
+    setReacted(type)
+
+    if (type === 'like') {
+      setUpvotes(upvotes + 1)
+      if (reacted === 'downvote') {
+        setDownvotes(downvotes - 1)
+      }
+    } else if (type === 'downvote') {
+      setDownvotes(downvotes + 1)
+      if (reacted === 'like') {
+        setUpvotes(upvotes - 1)
+      }
+    }
+    
+    const res = await orbis.react(comment.stream_id, type)
+    // Revert back if failed
+    if (res.status !== 200) {
+      setReacted(reacted)
+      if (type === 'like') {
+        setUpvotes(upvotes - 1)
+        if (reacted === 'downvote') {
+          setDownvotes(downvotes + 1)
+        }
+      } else if (type === 'downvote') {
+        setDownvotes(downvotes - 1)
+        if (reacted === 'like') {
+          setUpvotes(upvotes + 1)
+        }
+      }
+    }
   }
 
   const getReacted = async () => {
@@ -76,6 +108,8 @@ const Comment = ({
   useEffect(() => {
     if (orbis && profile && comment) {
       getReacted()
+      setUpvotes(comment.count_likes)
+      setDownvotes(comment.count_downvotes)
     }
   }, [orbis, profile, comment])
 
@@ -150,29 +184,37 @@ const Comment = ({
       <div className="flex items-center gap-4">
         <button
           type="button"
-          className={`inline-flex items-center gap-2 ${
-            reacted === 'like' ? 'text-primary' : ''
-          }`}
+          className="inline-flex items-center gap-2"
           onClick={() => reacting('like')}
           disabled={reacted === 'like'}
         >
-          <div className="w-6 h-6 rounded-full flex items-center justify-center bg-blue-medium">
+          <div
+            className={`btn btn-circle small ${
+              reacted === 'like'
+                ? 'bg-primary text-blue-dark'
+                : 'bg-blue-medium text-white'
+            }`}
+          >
             <UpvoteIcon size="1.25rem" />
           </div>
-          <span className="text-small">{count_likes}</span>
+          <span className="text-small">{upvotes}</span>
         </button>
         <button
           type="button"
-          className={`inline-flex items-center gap-2 ${
-            reacted === 'downvote' ? 'text-primary' : ''
-          }`}
+          className="inline-flex items-center gap-2"
           onClick={() => reacting('downvote')}
           disabled={reacted === 'downvote'}
         >
-          <div className="w-6 h-6 rounded-full flex items-center justify-center bg-blue-medium">
+          <div
+            className={`btn btn-circle small ${
+              reacted === 'downvote'
+                ? 'bg-primary text-blue-dark'
+                : 'bg-blue-medium text-white'
+            }`}
+          >
             <DownvoteIcon size="1.25rem" />
           </div>
-          <span className="text-small">{count_downvotes}</span>
+          <span className="text-small">{downvotes}</span>
         </button>
         <button
           type="button"
