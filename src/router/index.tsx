@@ -19,7 +19,6 @@ const FavouritesPage = lazy(() => import('../pages/FavouritesPage'))
 const ProfilePage = lazy(() => import('../pages/ProfilePage'))
 const TopicPage = lazy(() => import('../pages/TopicPage'))
 const SubtopicPage = lazy(() => import('../pages/SubtopicPage'))
-const TestPage = lazy(() => import('../pages/TestPage'))
 
 const router = createBrowserRouter([
   {
@@ -84,15 +83,6 @@ const router = createBrowserRouter([
             )
           }
         ]
-      },
-      {
-        path: 'test',
-        handle: 'test',
-        element: (
-          <Suspense fallback={<LoadingPage />}>
-            <TestPage />
-          </Suspense>
-        )
       }
     ]
   }
