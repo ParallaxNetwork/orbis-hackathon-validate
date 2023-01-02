@@ -32,10 +32,9 @@ const AlertDialog = ({
   return (
     <Root open={open} onOpenChange={onOpenChange}>
       <Portal>
-        <Overlay className="bg-grey-dark/70 fixed inset-0 data-[state=open]:animate-fadeIn data-[state=closed]:animate-fadeOut" />
-        <div className="w-full h-full fixed inset-0 flex items-center justify-center">
+        <Overlay className="bg-grey-dark/70 flex justify-center fixed inset-0 z-10 data-[state=open]:animate-fadeIn data-[state=closed]:animate-fadeOut">
           <Content
-            className={`bg-blue-dark rounded-lg shadow-md ${maxWidth} data-[state=open]:animate-fadeInSlideUp`}
+            className={`bg-blue-dark rounded-lg shadow-md my-auto ${maxWidth} data-[state=open]:animate-fadeInSlideUp`}
           >
             <Title className="text-white font-title text-large text-center p-4 border-b border-b-muted">
               {title}
@@ -55,7 +54,7 @@ const AlertDialog = ({
               </Action>
             </div>
           </Content>
-        </div>
+        </Overlay>
       </Portal>
     </Root>
   )
