@@ -76,7 +76,7 @@ const Election = ({ electionId }: { electionId: string }) => {
 
     const T = result[q].reduce((acc: number, v: any) => acc + parseInt(v), 0)
     const percentage = (V / T) * 100
-    return percentage
+    return percentage.toFixed(1)
   }
 
   const castVote = async () => {
@@ -134,10 +134,10 @@ const Election = ({ electionId }: { electionId: string }) => {
                 {question.choices.map((choice: any, c: number) => (
                   <button
                     key={c}
-                    className={`flex items-center justify-between px-4 py-2 rounded-lg select-none border ${
+                    className={`relative overflow-hidden flex items-center justify-between px-4 py-2 rounded-lg select-none border ${
                       selected[q] === c
-                        ? 'bg-primary border-primary text-blue-dark font-bold'
-                        : 'border-blue-medium hover:border-primary hover:text-primary'
+                        ? 'border-primary text-blue-dark font-bold'
+                        : 'border-white hover:border-primary hover:text-primary'
                     }`}
                     onClick={() => {
                       if (!canVote) return
@@ -147,9 +147,12 @@ const Election = ({ electionId }: { electionId: string }) => {
                     }}
                     disabled={!canVote}
                   >
+                    {calculatePercentage(q, c) > 0 && (
+                      <div className="absolute inset-y-0 left-0 z-[-1] bg-blue-medium" style={{ width: calculatePercentage(q, c) + '%' }} />
+                    )}
                     <div>{choice.title.default}</div>
                     <div className="shrink-0 w-14 text-right">
-                      {calculatePercentage(q, c).toFixed(1)}%
+                      {calculatePercentage(q, c)}%
                     </div>
                   </button>
                 ))}
