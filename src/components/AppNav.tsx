@@ -1,6 +1,7 @@
 import { Link, NavLink } from 'react-router-dom'
 import { useOrbis } from '../contexts/orbis'
 import { useAppData } from '../contexts/appData'
+import ConnectButton from './ConnectButton'
 
 const AppNav = () => {
   const { profile } = useOrbis()
@@ -14,7 +15,7 @@ const AppNav = () => {
       >
         <img src="/logo.svg" alt="Validate" className="w-[136px]" />
       </Link>
-      {profile && (
+      {profile ? (
         <div className="mb-6 px-6">
           <button
             className="btn btn-pill bg-primary large"
@@ -22,6 +23,10 @@ const AppNav = () => {
           >
             + New Topic
           </button>
+        </div>
+      ) : (
+        <div className="mb-6 px-6 xl:hidden">
+          <ConnectButton withMessage={false} />
         </div>
       )}
       <nav className="nav">
