@@ -82,12 +82,12 @@ const Election = ({ electionId }: { electionId: string }) => {
   const castVote = async () => {
     if (isSubmitting || !vocdoniClient || !election) return
     setIsSubmitting(true)
-    
+
     try {
       vocdoniClient.setElectionId(election.electionId)
       const vote = new Vote(selected)
       const voteId = await vocdoniClient.submitVote(vote)
-      
+
       // Refetch election
       if (voteId) fetchElection()
     } catch (error) {
@@ -136,7 +136,7 @@ const Election = ({ electionId }: { electionId: string }) => {
                     key={c}
                     className={`relative overflow-hidden flex items-center justify-between px-4 py-2 rounded-lg select-none border ${
                       selected[q] === c
-                        ? 'border-primary text-blue-dark font-bold'
+                        ? 'border-primary text-white font-bold'
                         : 'border-white hover:border-primary hover:text-primary'
                     }`}
                     onClick={() => {
@@ -148,7 +148,12 @@ const Election = ({ electionId }: { electionId: string }) => {
                     disabled={!canVote}
                   >
                     {calculatePercentage(q, c) > 0 && (
-                      <div className="absolute inset-y-0 left-0 z-[-1] bg-blue-medium" style={{ width: calculatePercentage(q, c) + '%' }} />
+                      <div
+                        className={`absolute inset-y-0 left-0 z-[-1] ${
+                          selected[q] === c ? 'bg-primary' : 'bg-blue-medium'
+                        }`}
+                        style={{ width: calculatePercentage(q, c) + '%' }}
+                      />
                     )}
                     <div>{choice.title.default}</div>
                     <div className="shrink-0 w-14 text-right">
