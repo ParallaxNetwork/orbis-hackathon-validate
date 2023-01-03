@@ -77,7 +77,7 @@ const ElectionDialog = ({
   }, [contributors, vcs, verified, useVerified])
 
   const isDisabled = useMemo(() => {
-    if (formStep === 1 && (!type || !title || !days)) {
+    if (formStep === 1 && (!type || !title || !description || !days)) {
       return true
     } else if (formStep === 2) {
       // Filter question with empty title
@@ -247,7 +247,7 @@ const ElectionDialog = ({
                   <option value="basic">Basic</option>
                   <option value="stream">Ranked</option>
                 </select>
-                <small className='text-grey-lighter mt-1 ml-2'>
+                <small className="text-grey-lighter mt-1 ml-2">
                   More options coming soon
                 </small>
               </div>
@@ -284,6 +284,7 @@ const ElectionDialog = ({
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Election description..."
+                  required={true}
                 />
               </div>
 
@@ -460,8 +461,8 @@ const ElectionDialog = ({
           {formStep === 3 && (
             <div className="mb-4">
               <div className="mb-4 px-4 py-2 border border-primary rounded-lg text-primary bg-primary/10 text-center">
-                {realContributors.length} contributors are eligible to cast
-                a vote
+                {realContributors.length} contributors are eligible to cast a
+                vote
               </div>
               <div className="flex flex-col">
                 <label className="text-small ml-2 mb-1 text-grey-lighter">
